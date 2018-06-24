@@ -42,7 +42,6 @@ io.sockets.on('connection', function(socket) {
     console.log('a user connected from ' + clientIP);
 
     socket.on('createCode', function(code) {
-        console.log(code);
         createCode(socket, code, clientIP);
     });
 
@@ -124,8 +123,6 @@ function updateMode(socket, codeId, mode, modifyIp)
     socket.broadcast.to(codeId).emit('setMode', mode);
 
     db.run('UPDATE code SET mode = ?, modify_date = ?, modify_ip = ? WHERE id = ?', [mode, modifyDate, modifyIp, codeId]);
-
-    console.log('mode: ' + mode);
 }
 
 function updateCode(socket, codeId, code, modifyIp)
@@ -138,6 +135,4 @@ function updateCode(socket, codeId, code, modifyIp)
     });
 
     db.run('UPDATE code SET value = ?, modify_date = ?, modify_ip = ? WHERE id = ?', [code, modifyDate, modifyIp, codeId]);
-
-    console.log('code: ' + code);
 }
