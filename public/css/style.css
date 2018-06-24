@@ -1,0 +1,47 @@
+body {
+    background: #151515;
+    overflow: hidden;
+}
+
+.footer {
+    line-height: 15px;
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    border-top: 1px solid #3c3c3c;
+}
+
+html, body
+{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.flexbox-parent
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+}
+
+.fill-area
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+    flex: 1;    
+    overflow:  auto;
+}
+
+.fill-area-content, .CodeMirror-scroll
+{
+    overflow: auto;
+}
