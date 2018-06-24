@@ -37,11 +37,11 @@ html, body
     justify-content: flex-start;
     align-items: stretch;
     align-content: stretch;
-    flex: 1;    
-    overflow:  auto;
+    flex: 1;
+    overflow: auto;
 }
 
 .fill-area-content, .CodeMirror-scroll
 {
-    overflow: auto;
+    flex: 1;
 }
