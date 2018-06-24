@@ -9,7 +9,7 @@ var randomstring = require("randomstring");
 var db = new sqlite3.Database('./code.db');
 db.run('CREATE TABLE IF NOT EXISTS code(id text, value text, mode text, create_date text, modify_date text, create_ip, modify_ip, UNIQUE ("id"))');
 
-var httpPort = 3000;
+var httpPort = process.env.HTTP_PORT || 3000;
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
