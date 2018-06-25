@@ -49,12 +49,8 @@
                         <div data-bind="if: isStarted">
                             <div>Połączonych użytkowników: <span data-bind='text: connectedClients'></span></div>
                         </div>
+                        <div>Nazwa użytkownika: <input class="userName" type="text" data-bind='value: userName' /></div>
                     </div>
-                    <div class="col-sm">
-                            <div>
-                                <div>Nazwa użytkownika: <input type="text" data-bind='value: userName' class="form-control-sm" /></div>
-                            </div>
-                        </div>
                     <div class="col-sm">
                         <select class="form-control-sm float-right" data-bind="
                             options: modeOptions,
