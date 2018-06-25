@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Podziel się swoim kodem</title>
+        <link rel="shortcut icon" type="image/png" href="/img/favicon.png"/>
         <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
         <link rel="stylesheet" href="/codemirror/lib/codemirror.css">
         <link rel="stylesheet" href="/codemirror/theme/base16-dark.css">
+        <link rel="stylesheet" href="/jquery-toast-plugin/jquery.toast.min.css">
         <link rel="stylesheet" href="/css/style.css">
         <script src="/socket.io/socket.io.js"></script>
         <script src="/js/jquery/jquery.min.js"></script>
         <script src="/knockout/knockout-latest.js"></script>
         <script src="/codemirror/lib/codemirror.js"></script>
-        <script src="/codemirror/mode/javascript/javascript.js"></script>
-        <script src="/codemirror/mode/sql/sql.js"></script>
-        <script src="/codemirror/mode/clike/clike.js"></script>
-        <script src="/codemirror/mode/php/php.js"></script>
-        <script src="/codemirror/mode/python/python.js"></script>
-        <script src="/codemirror/mode/xml/xml.js"></script>
-        <script src="/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+        <script src="/codemirror/addon/mode/loadmode.js"></script>
+        <script src="/moment/moment.min.js"></script>
+        <script src="/jquery-toast-plugin/jquery.toast.min.js"></script>
         <script type="text/javascript">
             const _codeId = <%- codeId %>;
         </script>
@@ -32,14 +31,24 @@
             <div class="flexbox-item footer">
                 <div class="row">
                     <div class="col-sm">
-                        <div data-bind="if: createDate">
+                        <div data-bind="if: isStarted">
                             <div>Data utworzenia: <span data-bind='text: createDate'></span></div>
                             <div>Data modyfikacji: <span data-bind='text: modifyDate'></span></div>
                         </div>
-                        <div data-bind="ifnot: createDate">
-                            <button data-bind="click: createCode" type="button" class="btn btn-light btn-sm">Podziel się kodem</button>
+                        <div data-bind="ifnot: isStarted">
+                            Zapis lokalny <button data-bind="click: createCode" type="button" class="btn btn-light btn-sm">Podziel się kodem</button>
                         </div>
                     </div>
+                    <div class="col-sm">
+                        <div data-bind="if: isStarted">
+                            <div>Połączonych użytkowników: <span data-bind='text: connectedClients'></span></div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                            <div>
+                                <div>Nazwa użytkownika: <input type="text" data-bind='value: userName' class="form-control-sm" /></div>
+                            </div>
+                        </div>
                     <div class="col-sm">
                         <select class="form-control-sm float-right" data-bind="
                             options: modeOptions,
