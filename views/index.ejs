@@ -31,6 +31,12 @@
             <div class="flexbox-item footer">
                 <div class="row">
                     <div class="col-sm">
+                        <div>
+                            <div>Linia: <span data-bind='text: currentLine'></span></div>
+                            <div>Kolumna: <span data-bind='text: currentCol'></span></div>
+                        </div>
+                    </div>
+                    <div class="col-sm">
                         <div data-bind="if: isStarted">
                             <div>Data utworzenia: <span data-bind='text: createDate'></span></div>
                             <div>Data modyfikacji: <span data-bind='text: modifyDate'></span></div>

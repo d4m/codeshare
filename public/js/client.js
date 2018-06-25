@@ -17,6 +17,9 @@ $(function () {
         self.createDate = ko.observable(null);
         self.modifyDate = ko.observable(null);
 
+        self.currentLine = ko.observable(0);
+        self.currentCol = ko.observable(0);
+
         self.modeOptions = ko.observableArray([
             {value: 'javascript', name: 'JavaScript'},
             {value: 'sql', name:  'SQL'},
@@ -71,8 +74,7 @@ $(function () {
         theme: 'base16-dark',
         mode: 'javascript'
     });
-
-   
+  
     editor.setSize('100%', '100%');
 
     editor.on('change', function(_editor, _changes) {
@@ -80,6 +82,13 @@ $(function () {
             return;
 
         localStorage.setItem('code', editor.getValue());
+    });
+
+    editor.on('cursorActivity', function(_editor, _change) {
+        var cursorPos = editor.getCursor();
+
+        viewModel.currentLine(cursorPos.line);
+        viewModel.currentCol(cursorPos.ch);
     });
 
     if(!codeId)
