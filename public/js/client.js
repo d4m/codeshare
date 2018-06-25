@@ -62,7 +62,10 @@ $(function () {
 
     function setCode(code)
     {
+        var cursorPos = editor.getCursor();
+
         editor.setValue(code.value);
+        editor.setCursor(cursorPos);
 
         if(code.mode)
             setMode(code.mode);
