@@ -87,7 +87,7 @@ $(function () {
     editor.on('cursorActivity', function(_editor, _change) {
         var cursorPos = editor.getCursor();
 
-        viewModel.currentLine(cursorPos.line);
+        viewModel.currentLine(cursorPos.line+1);
         viewModel.currentCol(cursorPos.ch);
     });
 
