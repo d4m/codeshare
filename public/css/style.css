@@ -52,3 +52,20 @@ body {
 {
     flex: 1;
 }
+
+.CodeMirror-users {width: .8em;}
+
+.CodeMirror .userMarker {
+    cursor: help;
+    z-index: 9999;
+    position: absolute;
+    top: -20px;
+    left: -12px;
+}
+
+.CodeMirror .userCursor {
+    border-style: solid;
+    border-width: 0 0 0 1px;
+    position: absolute;
+    top: -19px
+}

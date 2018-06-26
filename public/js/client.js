@@ -72,7 +72,8 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         theme: 'base16-dark',
-        mode: 'javascript'
+        mode: 'javascript',
+        gutters: ['CodeMirror-linenumbers', 'CodeMirror-users']
     });
   
     editor.setSize('100%', '100%');
@@ -158,17 +159,25 @@ $(function () {
     }
 
     function makeUserMarker(userName, userColor) {
-        return $('<div>●</div>').css({
+        var wrapper = $('<div></div>');
+        var marker = $('<div>●</div>').css({
             color: userColor,
-            cursor: 'help',
-            'z-index': 9999
-        }).attr('title', userName)[0];
+        }).addClass('userMarker').attr('title', userName);
+
+        wrapper.append(marker);
+
+        return wrapper[0];
     }
 
     function makeUserCursor(userName, userColor) {
-        return $('<div>&nbsp;</div>').css({
-            'border-left': '1px solid '+userColor
-        })[0];
+        var wrapper = $('<div></div>');
+        var marker = $('<div>&nbsp;</div>').css({
+            'border-color': userColor
+        }).addClass('userCursor')[0];
+
+        wrapper.append(marker);
+
+        return wrapper[0];
     }
 
     function startEditing()
