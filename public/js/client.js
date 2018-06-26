@@ -7,32 +7,24 @@ $(function () {
     var codeId = _codeId;
     var socket = io();
 
+    socket.on('connect', function() {
+        startEditing();
+    });
+
     var ViewModel = function() {
         var self = this;
 
         self.userName = ko.observable(localStorage.getItem('userName') || 'Anonim');
         self.connectedClients = ko.observable(0);
         self.isStarted = ko.observable(false);
-
         self.createDate = ko.observable(null);
         self.modifyDate = ko.observable(null);
-
         self.currentLine = ko.observable(0);
         self.currentCol = ko.observable(0);
-
-        self.modeOptions = ko.observableArray([
-            {value: 'javascript', name: 'JavaScript'},
-            {value: 'sql', name:  'SQL'},
-            {value: 'clike', name:  'C, C++, C#'},
-            {value: 'php', name:  'PHP'},
-            {value: 'python', name:  'Python'},
-            {value: 'xml', name:  'XML'},
-            {value: 'htmlmixed', name:  'HTML'}
-        ]);
-
+        self.modeOptions = ko.observableArray(editorModes);
         self.selectedMode = ko.observable();
-
         self.createCode = createCode;
+
         self.modeChanged = function() {
             setMode(self.selectedMode());
 
@@ -72,7 +64,7 @@ $(function () {
         styleActiveLine: true,
         matchBrackets: true,
         theme: 'base16-dark',
-        mode: 'javascript',
+        mode: null,
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-users']
     });
   
@@ -128,34 +120,64 @@ $(function () {
         socket.emit('createCode', {value: editor.getValue(), mode: editor.getMode().name});
     }
 
-    var selections = {};
-    var markers = {};
-    var cursors = {};
+    var users = {}
 
-    function clearSelection(clientId)
+    function clearUser(clientId)
     {
-        if(selections[clientId])
-            selections[clientId].clear();
+        if(!users[clientId])
+            return;
 
-        if(markers[clientId])
-            $(markers[clientId]).remove();
+        var user = users[clientId];
 
-        if(cursors[clientId])
-            $(cursors[clientId]).remove();
+        if(user.selection)
+        {
+            user.selection.clear();
+            user.selection = null;
+        }
+
+        if(user.marker)
+        {
+            $(user.marker).remove();
+            user.marker = null;
+        }
+
+        if(user.cursor)
+        {
+            $(user.cursor).remove();
+            user.cursor = null;
+        }
+    }
+
+    function clearAllUsers()
+    {
+        $.each(Object.keys(users), function(i, clientId) {
+            clearUser(clientId);
+        });
     }
 
     function setSelection(selection)
     {
-        clearSelection(selection.clientId);
+        clearUser(selection.clientId);
+
+        if(!users[selection.clientId])
+        {
+            users[selection.clientId] = {
+                marker: null,
+                seletion: null,
+                cursor: null
+            };
+        }
 
         if(selection.from != selection.to)
-            selections[selection.clientId] = editor.markText(selection.from, selection.to, {css: 'background-color: '+selection.userColor, title: 'Zaznaczone przez użytkownika '+selection.userName});
+            users[selection.clientId].selection = editor.markText(selection.from, selection.to, {css: 'background-color: '+selection.userColor, title: 'Zaznaczone przez użytkownika '+selection.userName});
 
-        markers[selection.clientId] = makeUserMarker(selection.userName, selection.userColor);
-        editor.addWidget({line: selection.from.line, ch: 0}, markers[selection.clientId]);
+        var marker = makeUserMarker(selection.userName, selection.userColor);
+        editor.addWidget({line: selection.from.line, ch: 0}, marker);
+        users[selection.clientId].marker = marker;
 
-        cursors[selection.clientId] = makeUserCursor(selection.userName, selection.userColor);
-        editor.addWidget({line: selection.from.line, ch: selection.from.ch}, cursors[selection.clientId]);
+        var cursor = makeUserCursor(selection.userName, selection.userColor);
+        editor.addWidget({line: selection.from.line, ch: selection.from.ch}, cursor);
+        users[selection.clientId].cursor = cursor;
     }
 
     function makeUserMarker(userName, userColor) {
@@ -180,12 +202,21 @@ $(function () {
         return wrapper[0];
     }
 
+    function joinEditing()
+    {
+        clearAllUsers();
+        socket.emit('userJoin', {codeId: codeId, 'userName': viewModel.userName()});
+    }
+
     function startEditing()
     {
-        if(!codeId || isStarted)
+        if(!codeId)
             return;
 
-        socket.emit('userJoin', {codeId: codeId, 'userName': viewModel.userName()});
+        joinEditing();
+
+        if(isStarted)
+            return;
 
         editor.on('change', function(_editor, _changes) {
 
@@ -216,7 +247,6 @@ $(function () {
         });
 
         socket.on('userJoin', function(status) {
-
             if(!status.me)
                 toastJoin(status.userName);
 
@@ -224,11 +254,11 @@ $(function () {
         });
 
         socket.on('userLeave', function(status) {
-            clearSelection(status.clientId);
+            clearUser(status.clientId);
             toastLeave(status.userName);
             viewModel.connectedClients(status.connectedClients);
         });
-    
+
         setInterval(function() {
 
             if(isModeChange || isChange)
@@ -294,6 +324,4 @@ $(function () {
             position : 'top-right'
         })
     }
-
-    startEditing();
 });
